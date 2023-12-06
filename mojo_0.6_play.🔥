@@ -1,0 +1,92 @@
+# https://docs.modular.com/mojo/changelog.html?utm_content=273987722&utm_medium=social&utm_source=twitter&hss_channel=tw-1483918307484848132
+
+fn main():
+  testtraits()
+  testdestructable()
+
+# Traits
+
+fn testtraits():
+  let thingone = woman()
+  let thingtwo = mallard()
+  thingone.move()
+  thingtwo.makeNoise()
+
+  makeloudmovement(thingone)
+  makeloudmovement(thingtwo)
+
+  # can't have a DynamicVector of a trait even if it inherits from CollectionElement
+  var things: DynamicVector[woman] = DynamicVector[woman]()
+  things.append(thingone)
+
+trait locomotable:
+  fn move(self):
+    ...
+
+trait noisy:
+  fn makeNoise(self):
+    ...
+
+trait noisymover(locomotable, noisy):
+    ...
+
+trait duck(noisymover, CollectionElement):
+    ...
+
+trait human(noisymover,CollectionElement):
+    ...
+
+@value
+struct woman(human):
+  fn move(self):
+    print("walking")
+  
+  fn makeNoise(self):
+    print("hello")
+
+@value
+struct mallard(duck):
+  fn move(self):
+    print("waddle")
+
+  fn makeNoise(self):
+    print("quack")
+
+fn makemove[t: locomotable](tocheck: t):
+  tocheck.move()
+
+fn makesound[t: noisy](tocheck: t):
+  tocheck.makeNoise()
+
+fn makeloudmovement[t: noisymover](tocheck: t):
+  tocheck.move()
+  tocheck.makeNoise()
+
+# Destructable
+
+fn testdestructable():
+  let thing = Mustdie(10)
+  print(thing)
+  print("Done")
+
+@value
+struct Mustdie(Destructable, Stringable):
+  var ptr: Pointer[Int]
+  var size: Int
+
+  fn __init__(inout self, size: Int):
+    self.size = size
+    self.ptr = Pointer[Int].alloc(size)
+    for i in range(self.size):
+      self.ptr[i] = i
+
+  fn __del__(owned self):
+    print("Deleting:", self.size)
+    self.ptr.free()
+
+  fn __str__(self) -> String:
+    var result:String = ""
+    for i in range(self.size):
+      result += String(self.ptr[i])
+    return result
+    
