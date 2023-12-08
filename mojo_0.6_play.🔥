@@ -89,4 +89,14 @@ struct Mustdie(Destructable, Stringable):
     for i in range(self.size):
       result += String(self.ptr[i])
     return result
-    
+
+# movable, copyable
+
+struct van(Movable, Copyable):
+  var thing: Int
+
+  fn __moveinit__(inout self: van, owned existing: van ):
+    self.thing = existing.thing
+
+  fn __copyinit__(inout self: van, existing: van ):
+    self.thing = existing.thing
