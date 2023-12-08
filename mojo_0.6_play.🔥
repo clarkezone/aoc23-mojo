@@ -3,6 +3,7 @@
 fn main():
   testtraits()
   testdestructable()
+  testMovableCopyable()
 
 # Traits
 
@@ -67,10 +68,13 @@ fn makeloudmovement[t: noisymover](tocheck: t):
 fn testdestructable():
   let thing = Mustdie(10)
   print(thing)
+  print("len()",len(thing))
+  print("int()", int(thing))
   print("Done")
 
+
 @value
-struct Mustdie(Destructable, Stringable):
+struct Mustdie(Destructable, Stringable, Intable, Sized):
   var ptr: Pointer[Int]
   var size: Int
 
@@ -90,13 +94,36 @@ struct Mustdie(Destructable, Stringable):
       result += String(self.ptr[i])
     return result
 
+  fn __int__(self) -> Int:
+    var total: Int = 0
+    for i in range(self.size):
+      total += self.ptr[i]
+    return total
+
+  fn __len__(self) -> Int:
+    return self.size
+
+
 # movable, copyable
 
-struct van(Movable, Copyable):
+struct van(Movable, Copyable, CollectionElement):
   var thing: Int
 
+  fn __init__(inout self):
+    print("van init")
+    self.thing = 0
+
   fn __moveinit__(inout self: van, owned existing: van ):
+    print("van moveinit")
     self.thing = existing.thing
 
   fn __copyinit__(inout self: van, existing: van ):
+    print("van copyinit")
     self.thing = existing.thing
+
+  
+
+fn testMovableCopyable():
+   var vans: DynamicVector[van] = DynamicVector[van]() 
+   vans.append(van())
+   print("len vans",len(vans))
