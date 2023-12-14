@@ -3,7 +3,7 @@ fn main() raises:
   let thebar: bar[String]=bar[String]()
 
 @value
-struct bar[T: AnyType]:
+struct bar[T: Moveable]:
   fn generictest(self, thing: T) -> None:
     let thinger: T
     thinger = thing
