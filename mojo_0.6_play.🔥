@@ -1,6 +1,6 @@
 # https://docs.modular.com/mojo/changelog.html?utm_content=273987722&utm_medium=social&utm_source=twitter&hss_channel=tw-1483918307484848132
 
-fn main():
+fn main() raises:
   testtraits()
   testdestructable()
   testMovableCopyable()
@@ -139,7 +139,7 @@ fn testMovableCopyable():
    # explict calling del on vans weird also
    #
 
-fn testSaveTensor():
+fn testSaveTensor() raises:
    from random import rand
    from tensor import Tensor, TensorSpec, TensorShape
    from utils.index import Index
@@ -152,4 +152,4 @@ fn testSaveTensor():
      for j in range(9):
        for k in range(2):
          tensor[Index(i,j,k)] = test[i,j,k]
-#         tensor[i,j,k] = test[i,j,k]
+   tensor.save("./cool")
